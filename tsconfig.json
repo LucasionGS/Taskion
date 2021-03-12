@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "watch": true,
+    "declaration": true,
+    "declarationDir": "./declarations",
+    "target": "ES6"
+  },
+  "exclude": [
+    "node_modules",
+    "./declarations"
+  ]
+}

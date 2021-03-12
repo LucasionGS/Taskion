@@ -1,0 +1,24 @@
+.task-icon {
+  width: 64px;
+  height: 64px;
+  transition:
+    background-color 0.1s ease-in-out,
+    filter 0.1s ease-in-out;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.task-icon:hover {
+  background-color: #3b3b3b;
+  filter: brightness(1.1);
+}
+
+.task-icon img {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+  margin: auto;
+  margin-top: 50%;
+  transform: translateY(-50%);
+  user-select: none;
+}

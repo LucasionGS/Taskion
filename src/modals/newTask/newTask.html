@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script> var exports = {}; </script>
+  <script defer src="./newTask.js"></script>
+  <link rel="stylesheet" href="../../css/.MAIN.css">
+  <link rel="stylesheet" href="./newTask.css">
+  <title>Taskion - New Task</title>
+</head>
+<body>
+  <div id="renderer-container">
+    <header>
+      <div class="drag-region"></div>
+      <div class="header-button" data-action="close">
+        <img src="../../img/close-x.png" alt="">
+      </div>
+    </header>
+    <div id="add-task-form" class="form">
+      <label>Icon</label>
+      <input type="text" onclick="selectFile();" readonly id="filename_display">
+      <br>
+      <label>Description</label>
+      <input type="text" onchange="task.description = this.value">
+      <br>
+      <label>Icon</label>
+      <select onchange="onTypeChange(this.value)">
+        <option value="None">None</option>
+        <option value="OpenWeb">Open Website</option>
+        <option value="OpenItem">Open path</option>
+      </select>
+      <br>
+      <div id="extra-parameters" class="form full">
+        <!-- Adding extra parameters in script -->
+      </div>
+      <button onclick="createTask()">Create Task</button>
+    </div>
+  </div>
+</body>
+</html>

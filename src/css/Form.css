@@ -1,0 +1,42 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 5vw;
+  box-sizing: border-box;
+}
+
+.form.full {
+  width: 100%;
+}
+
+.form hr {
+  width: 100%;
+}
+
+.form button, .form input, .form select, .form option {
+  width: 60%;
+}
+
+button, input, select, option {
+  background-color: #1b1b1b;
+  color: white;
+  border: solid 1px gray;
+  border-radius: 5px;
+  margin: 2px;
+  user-select: none;
+}
+
+button:focus, input:focus, select:focus, option:focus {
+  outline: none;
+}
+
+button:active, input:active, select:active, option:active {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+input, select, option {
+  padding: 4px;
+  box-sizing: border-box;
+}

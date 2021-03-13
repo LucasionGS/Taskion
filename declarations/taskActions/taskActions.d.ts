@@ -5,5 +5,6 @@ declare namespace TaskActions {
     function OpenWeb({ url }: {
         url: string;
     }): void;
+    function CreateNewTask(): void;
 }
 export default TaskActions;

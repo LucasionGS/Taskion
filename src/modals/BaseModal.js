@@ -5,13 +5,12 @@ require("Electron");
 class BaseModal {
     constructor(templateName) {
         this.htmlFilePath = Tools_1.prodPath(`src/modals/${templateName}/${templateName}.html`);
-        console.log(this.htmlFilePath);
     }
     getWindow() {
         var _a;
         return (_a = this.win) !== null && _a !== void 0 ? _a : null;
     }
-    open() {
+    open(onClose) {
         this.win = new Electron.remote.BrowserWindow({
             modal: true,
             parent: Electron.remote.getCurrentWindow(),
@@ -31,6 +30,7 @@ class BaseModal {
         });
         this.win.on("closed", () => {
             this.win = null;
+            typeof onClose === "function" && onClose();
         });
         this.win.loadFile(this.htmlFilePath);
     }

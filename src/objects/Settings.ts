@@ -4,26 +4,42 @@ import * as os from "os";
 import * as Path from "path";
 const fsp = fs.promises;
 
-export default class Settings extends Mappable<SettingsObject> {
+export default class Settings {
   constructor() {
-    super();
     this.load();
   }
   
 
-  public mapFrom(keyPairs: Partial<SettingsObject>) {
-    for (const key in keyPairs) {
-      if (Object.prototype.hasOwnProperty.call(keyPairs, key)) {
-        const v = keyPairs[key];
-        this.settings[key] = v;
+  public setItems(settings: Partial<SettingsObject>) {
+    let s = this.load();
+    for (const key in settings) {
+      if (Object.prototype.hasOwnProperty.call(settings, key)) {
+        const v = settings[key];
+        s[key] = v;
       }
     }
-
-    return this;
+    this.save(s);
+    return s;
   }
 
-  public settings: SettingsObject = {
-    tasksStorage: null,
+  private settings: SettingsObject = {
+    hideOnBlur: false
+  }
+
+  /**
+   * Set an item in settings 
+   * @returns 
+   */
+  public setItem<T extends keyof SettingsObject>(item: T, value: SettingsObject[T]) {
+    let s = this.load();
+    s[item] = value;
+    this.save(s);
+    return s;
+  }
+  
+  public getItem<T extends keyof SettingsObject>(item: T): SettingsObject[T] {
+    let s = this.load();
+    return s[item];
   }
 
   toJSON() {
@@ -33,10 +49,10 @@ export default class Settings extends Mappable<SettingsObject> {
   /**
    * Sync saving.
    */
-   public save(): boolean {
+   private save(settings: SettingsObject): boolean {
     this.createFolder();
     try {
-      fs.writeFileSync(this.filePath, JSON.stringify(this.settings));
+      fs.writeFileSync(this.filePath, JSON.stringify(settings));
       return true;
     } catch (error) {
       return false;
@@ -52,13 +68,12 @@ export default class Settings extends Mappable<SettingsObject> {
   /**
    * Loads the settings file into `this.settings`.
    */
-  public load(): boolean {
+  private load(): SettingsObject {
     try {
-      this.settings = JSON.parse(fs.readFileSync(this.filePath, "utf8"));
-      return true;
+      return JSON.parse(fs.readFileSync(this.filePath, "utf8"));
     } catch (error) {
       console.error(error);
-      return false;
+      return null;
     }
   }
 
@@ -68,5 +83,5 @@ export default class Settings extends Mappable<SettingsObject> {
 }
 
 interface SettingsObject {
-  tasksStorage: string;
+  
 }

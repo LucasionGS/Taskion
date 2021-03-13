@@ -4,15 +4,15 @@ const Electron = require("electron");
 var Header;
 (function (Header) {
     let win = Electron.remote.getCurrentWindow();
-    function setupCloseButtonFunctionality(btn, hideInsteadOfClose = false) {
+    function setupCloseButtonFunctionality(btn, hideOnClose = false) {
         btn.addEventListener("click", e => {
-            if (hideInsteadOfClose) {
-                Electron.remote.app.quit();
+            if (!hideOnClose) {
+                win.close();
             }
             else {
                 if (e.ctrlKey) {
                     if (confirm("Do you want to quit Taskion?")) {
-                        Electron.remote.app.quit();
+                        win.close();
                     }
                     else {
                         setTimeout(() => {

@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const Header_1 = require("../../Header");
 const Task_1 = require("../../objects/Task");
@@ -6,8 +15,50 @@ const Electron = require("electron");
 const taskAction_1 = require("../../taskActions/taskAction");
 Header_1.default.setup();
 const task = new Task_1.default();
-task.taskType = taskAction_1.TaskActionEnum.None;
+task.taskType = taskAction_1.TaskActionType.None;
 let extraValues = {};
+// Add options to select type.
+let taskActionTypeSelect = document.getElementById("taskActionType");
+const options = [];
+for (const key in taskAction_1.TaskActionType) {
+    if (Object.prototype.hasOwnProperty.call(taskAction_1.TaskActionType, key)) {
+        const value = taskAction_1.TaskActionType[key];
+        const opt = document.createElement("option");
+        opt.innerText = taskAction_1.taskActionName(value);
+        opt.value = value;
+        options.push(opt);
+    }
+}
+taskActionTypeSelect.append(...options);
+// Add custom tasks, if any.
+let customTasks = Task_1.default.getCustomTasks();
+customTasks.then(cTasks => {
+    // Add separator
+    if (cTasks.length > 0) {
+        { // Add built tasks label
+            const opt = document.createElement("option");
+            opt.innerText = "- Built-in Tasks -";
+            opt.disabled = true;
+            taskActionTypeSelect.insertBefore(opt, taskActionTypeSelect.firstElementChild);
+        }
+        { // Add custom tasks label
+            const opt = document.createElement("option");
+            opt.innerText = "- Custom Tasks -";
+            opt.disabled = true;
+            taskActionTypeSelect.append(opt);
+        }
+    }
+    for (let i = 0; i < cTasks.length; i++) {
+        const value = cTasks[i];
+        const opt = document.createElement("option");
+        opt.innerText = value.name;
+        opt.value = "custom:" + value.ref;
+        taskActionTypeSelect.append(opt);
+    }
+});
+function isCustom(type) {
+    return type.startsWith("custom:");
+}
 function selectFile() {
     let files = Electron.remote.dialog.showOpenDialogSync(Electron.remote.getCurrentWindow(), {
         filters: [
@@ -28,13 +79,15 @@ function selectFile() {
     document.getElementById('filename_display').value = task.icon = file;
 }
 function onTypeChange(type) {
-    var _a;
-    task.taskType = type;
-    let data = parametersToInputs((_a = taskAction_1.taskActionParameters[task.taskType]) !== null && _a !== void 0 ? _a : []);
-    extraValues = data.values;
-    let extraParameters = document.getElementById("extra-parameters");
-    extraParameters.innerHTML = "";
-    extraParameters.append(...data.elements);
+    var _a, _b;
+    return __awaiter(this, void 0, void 0, function* () {
+        task.taskType = type;
+        let data = parametersToInputs((_b = (!isCustom(type) ? taskAction_1.taskActionParameters[task.taskType] : (_a = (yield customTasks).find(t => "custom:" + t.ref === type)) === null || _a === void 0 ? void 0 : _a.parameters)) !== null && _b !== void 0 ? _b : []);
+        extraValues = data.values;
+        let extraParameters = document.getElementById("extra-parameters");
+        extraParameters.innerHTML = "";
+        extraParameters.append(...data.elements);
+    });
 }
 function parametersToInputs(params) {
     let data = {
@@ -46,15 +99,54 @@ function parametersToInputs(params) {
         inputName.innerText = p.name;
         const input = document.createElement("input");
         input.type = p.type;
+        setDefault(p, input);
         input.addEventListener("change", () => {
-            data.values[p.inputId] = p.type === "number" ? input.valueAsNumber : input.value;
+            setOnChangeFunctions(p, input);
         });
-        if (typeof p.defaultValue !== "undefined") {
-            data.values[p.inputId] = input.value = p.defaultValue + "";
+        switch (p.type) {
+            // Special case orders
+            case "checkbox":
+                data.elements.push(input, inputName, document.createElement("br"));
+                break;
+            // Default order
+            default:
+                data.elements.push(inputName, input, document.createElement("br"));
+                break;
         }
-        data.elements.push(inputName, input, document.createElement("br"));
     });
     return data;
+    function setOnChangeFunctions(p, input) {
+        let v;
+        switch (p.type) {
+            case "number":
+                v = input.valueAsNumber;
+                break;
+            case "checkbox":
+                v = input.checked;
+                break;
+            default:
+                v = input.value;
+                break;
+        }
+        data.values[p.inputId] = v;
+    }
+    function setDefault(p, input) {
+        let v = p.defaultValue;
+        console.log(v);
+        if (typeof v !== "undefined") {
+            switch (p.type) {
+                case "number":
+                    data.values[p.inputId] = input.valueAsNumber = v;
+                    break;
+                case "checkbox":
+                    data.values[p.inputId] = input.checked = v;
+                    break;
+                default:
+                    data.values[p.inputId] = input.value = v + "";
+                    break;
+            }
+        }
+    }
 }
 function createTask() {
     let taskData = {

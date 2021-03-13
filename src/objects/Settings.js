@@ -1,29 +1,43 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Mappable_1 = require("./Mappable");
 const fs = require("fs");
 const os = require("os");
 const Path = require("path");
 const fsp = fs.promises;
-class Settings extends Mappable_1.default {
+class Settings {
     constructor() {
-        super();
         this.settings = {
-            tasksStorage: null,
+            hideOnBlur: false
         };
         this._queuedSave = false;
         this._saving = false;
         this.filePath = Path.resolve(os.homedir(), ".taskion", "settings.json");
         this.load();
     }
-    mapFrom(keyPairs) {
-        for (const key in keyPairs) {
-            if (Object.prototype.hasOwnProperty.call(keyPairs, key)) {
-                const v = keyPairs[key];
-                this.settings[key] = v;
+    setItems(settings) {
+        let s = this.load();
+        for (const key in settings) {
+            if (Object.prototype.hasOwnProperty.call(settings, key)) {
+                const v = settings[key];
+                s[key] = v;
             }
         }
-        return this;
+        this.save(s);
+        return s;
+    }
+    /**
+     * Set an item in settings
+     * @returns
+     */
+    setItem(item, value) {
+        let s = this.load();
+        s[item] = value;
+        this.save(s);
+        return s;
+    }
+    getItem(item) {
+        let s = this.load();
+        return s[item];
     }
     toJSON() {
         return this.settings;
@@ -31,10 +45,10 @@ class Settings extends Mappable_1.default {
     /**
      * Sync saving.
      */
-    save() {
+    save(settings) {
         this.createFolder();
         try {
-            fs.writeFileSync(this.filePath, JSON.stringify(this.settings));
+            fs.writeFileSync(this.filePath, JSON.stringify(settings));
             return true;
         }
         catch (error) {
@@ -51,12 +65,11 @@ class Settings extends Mappable_1.default {
      */
     load() {
         try {
-            this.settings = JSON.parse(fs.readFileSync(this.filePath, "utf8"));
-            return true;
+            return JSON.parse(fs.readFileSync(this.filePath, "utf8"));
         }
         catch (error) {
             console.error(error);
-            return false;
+            return null;
         }
     }
 }

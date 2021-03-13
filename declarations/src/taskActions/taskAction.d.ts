@@ -7,10 +7,9 @@ export declare enum TaskActionType {
     OpenItem = "OpenItem",
     OpenWeb = "OpenWeb",
     Command = "Command",
-    CreateNewTask = "CreateNewTask",
-    Custom = "Custom"
+    CreateNewTask = "CreateNewTask"
 }
-export declare function taskActionName(tae: TaskActionType): "None" | "Open Item" | "Open Website" | "Command line" | "Create New Task" | "Custom";
+export declare function taskActionName(tae: TaskActionType): "None" | "Open Item" | "Open Website" | "Command line" | "Create New Task";
 export declare const taskActionParameters: {
     [key: string]: TaskActionParameter[];
 };

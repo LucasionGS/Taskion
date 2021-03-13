@@ -3,15 +3,15 @@ import * as Electron from "electron";
 
 namespace Header {
   let win = Electron.remote.getCurrentWindow();
-  export function setupCloseButtonFunctionality(btn: HTMLElement, hideInsteadOfClose = false) {
+  export function setupCloseButtonFunctionality(btn: HTMLElement, hideOnClose = false) {
     btn.addEventListener("click", e => {
-      if (hideInsteadOfClose) {
-        Electron.remote.app.quit();
+      if (!hideOnClose) {
+        win.close();
       }
       else {
         if (e.ctrlKey) {
           if (confirm("Do you want to quit Taskion?")) {
-            Electron.remote.app.quit();
+            win.close();
           }
           else {
             setTimeout(() => {
@@ -20,7 +20,7 @@ namespace Header {
           }
         }
         else {
-          win.hide()
+          win.hide();
         }
       }
     });

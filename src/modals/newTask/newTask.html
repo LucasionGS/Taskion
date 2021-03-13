@@ -24,11 +24,9 @@
       <label>Description</label>
       <input type="text" onchange="task.description = this.value">
       <br>
-      <label>Icon</label>
-      <select onchange="onTypeChange(this.value)">
-        <option value="None">None</option>
-        <option value="OpenWeb">Open Website</option>
-        <option value="OpenItem">Open path</option>
+      <label>Task type</label>
+      <select id="taskActionType" onchange="onTypeChange(this.value)">
+        <!-- Adding options in script -->
       </select>
       <br>
       <div id="extra-parameters" class="form full">

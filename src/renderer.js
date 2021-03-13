@@ -12,20 +12,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Electron = require("electron");
 const Dashboard_1 = require("./controls/Dashboard");
 const Header_1 = require("./Header");
+const Settings_1 = require("./objects/Settings");
 const Task_1 = require("./objects/Task");
 const { remote, remote: { app, } } = Electron;
 let win = remote.getCurrentWindow();
-win.setSize(800, 600);
+// win.setSize(800, 600);
+let settings = new Settings_1.default();
 // win.on("blur", () => win.hide()); // Close window when not in focus
-Header_1.default.setup();
+Header_1.default.setup(true);
 // Global Elements
 let dashboard = new Dashboard_1.default();
+dashboard.addEventsToButtons();
 function reloadTasks() {
     let tasks = Task_1.default.getTasks();
     dashboard.setTasks(tasks);
     return tasks;
 }
-(() => __awaiter(void 0, void 0, void 0, function* () {
+Promise.resolve().then(() => __awaiter(void 0, void 0, void 0, function* () {
     // Load tasks
     reloadTasks();
-}))();
+}));

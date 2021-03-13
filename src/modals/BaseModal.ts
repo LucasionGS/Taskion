@@ -4,7 +4,6 @@ import "Electron";
 export default abstract class BaseModal {
   constructor(templateName: string) {
     this.htmlFilePath = prodPath(`src/modals/${templateName}/${templateName}.html`);
-    console.log(this.htmlFilePath);
     
   }
 
@@ -15,7 +14,7 @@ export default abstract class BaseModal {
     return this.win ?? null;
   }
 
-  open() {
+  open(onClose?: () => void) {
     this.win = new Electron.remote.BrowserWindow({
       modal: true,
       parent: Electron.remote.getCurrentWindow(),
@@ -36,6 +35,7 @@ export default abstract class BaseModal {
 
     this.win.on("closed", () => {
       this.win = null;
+      typeof onClose === "function" && onClose();
     });
 
     this.win.loadFile(this.htmlFilePath);
@@ -46,4 +46,6 @@ export default abstract class BaseModal {
       this.win.close();
     }
   }
+
+
 }

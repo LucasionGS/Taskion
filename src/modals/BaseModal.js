@@ -19,7 +19,7 @@ class BaseModal {
             // resizable: false,
             webPreferences: {
                 nodeIntegration: true,
-                enableRemoteModule: true
+                enableRemoteModule: true,
             },
             autoHideMenuBar: true,
             alwaysOnTop: true,
@@ -33,6 +33,7 @@ class BaseModal {
             typeof onClose === "function" && onClose();
         });
         this.win.loadFile(this.htmlFilePath);
+        return this.win;
     }
     close() {
         if (this.win) {

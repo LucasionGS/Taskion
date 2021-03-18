@@ -1,13 +1,13 @@
 import * as Electron from "electron";
 import Mappable from "./Mappable";
 import ModalNewTask from "../modals/newTask/ModalNewTask";
-import { TaskActionType, TaskActions } from "../taskActions/taskAction";
-import { ICustomTask, TaskActionParameter, ICustomTaskWithRef } from "../taskActions/iTaskAction";
+import { ITaskTemplate, TaskActionParameter, ITaskTemplateWithRef } from "../taskActions/iTaskAction";
 import * as os from "os";
 import * as Path from "path";
 import Settings from "./Settings";
 import { readFileSync, writeFileSync } from "fs";
 import Dashboard from "../controls/Dashboard";
+import DefaultTasks from "../taskActions/DefaultTasks";
 
 interface HTMLTaskElement extends HTMLDivElement {
   task: Task;
@@ -18,16 +18,62 @@ export default class Task extends Mappable<Task> {
     super();
     this.element = document.createElement("div") as HTMLTaskElement;
     this.element.className = "task-icon";
+    this.element.draggable = true;
     this.element.task = this;
     this.iconElement = document.createElement("img");
+    this.iconElement.draggable = false;
     this.element.appendChild(this.iconElement);
 
     this.element.addEventListener("click", e => typeof this.onClick === "function" ? this.onClick.bind(this)(e) : null)
     this.element.addEventListener("contextmenu", e => typeof this.onContextMenu === "function" ? this.onContextMenu.bind(this)(e) : null)
+
+    this.element.addEventListener("dragstart", e => {
+      Task.dragging = this;
+    });
+    this.element.addEventListener("dragover", e => {
+      e.stopImmediatePropagation();
+      e.stopPropagation();
+      e.preventDefault();
+      const currentTarget = e.currentTarget as HTMLTaskElement;
+      if (Task.dragging != (currentTarget as HTMLTaskElement).task) {
+        // this.swapTaskPositions(e, Task.dragging, currentTarget.task);
+        currentTarget.task.swapTaskPositions(e);
+      }
+    });
+
+    this.element.addEventListener("dragend", e => {
+      Task.dragging = null;
+      let d = new Dashboard();
+      let ts = d.getTasks();
+      Task.saveTasks(ts);
+    });
+  }
+
+  private static dragging: Task = null;
+  private get parent() {
+    return this.element.parentElement;
+  }
+
+  private swapTaskPositions(e: DragEvent) {
+
+    let w = this.element.getBoundingClientRect().width
+    let o = e.offsetX;
+    let side = (w / 2) < o;
+
+    // Move `nodeA` to before the `nodeB`
+    if (side === false) {
+      if (this.element.previousElementSibling !== Task.dragging.element) this.element.parentNode.insertBefore(Task.dragging.element, this.element);
+    }
+    else {
+      if (this.element.nextElementSibling !== Task.dragging.element) this.element.parentNode.insertBefore(Task.dragging.element, this.element.nextElementSibling);
+    }
+
+    // Move `nodeB` to before the sibling of `nodeA`
+    // parentA.insertBefore(taskB.element, siblingA);
   }
 
   public onClick: ((this: Task, event: MouseEvent) => void);
-  public onContextMenu: ((this: Task, event: MouseEvent) => void) = function(e) {
+  public onContextMenu: ((this: Task, event: MouseEvent) => void) = function (e) {
     e.preventDefault();
     let self = this;
     let allTasks = Task.getCurrentTasks();
@@ -73,7 +119,15 @@ export default class Task extends Mappable<Task> {
 
     menu.popup();
   };
-  
+
+  public onDrop: ((this: Task, event: DragEvent) => void) = function (e) {
+    // e.preventDefault();
+    // e.stopPropagation();
+    // console.log(e.target);
+    // console.log(e.currentTarget);
+    // console.log(e.relatedTarget);
+  }
+
   public get icon(): string {
     let src = this.iconElement.src;
     if (src.startsWith("file:///")) src = src.substring("file:///".length);
@@ -86,7 +140,7 @@ export default class Task extends Mappable<Task> {
   public set description(v) {
     this.element.title = v;
   }
-  
+
   public get description() {
     return this.element.title;
   }
@@ -97,22 +151,29 @@ export default class Task extends Mappable<Task> {
     this.parameters = task.parameters;
     this.taskType = task.taskType;
     this.onClick = async (e) => {
-      let action: (args: typeof task.parameters) => void;
-      let customPrefix = "custom:";
+      let action: ITaskTemplate["action"];
+      const customPrefix = "custom:";
       if (task.taskType.startsWith(customPrefix)) {
         let path = task.taskType.substring(customPrefix.length);
-        let cTask: ICustomTask = (await import(path)).default;
-
-        action = cTask.action
+        let cTask: ITaskTemplate = (await import(path)).default;
+        action = cTask.action;
       }
       else {
-        action = TaskActions[task.taskType] as (args: typeof task.parameters) => void;
+        action = DefaultTasks[task.taskType]?.action ?? (() => alert("Error"));
       }
-      
+
       if (typeof action === "function") action(task.parameters);
     };
 
     return this;
+  }
+
+  public static getDefaultTasks() {
+    try {
+      return DefaultTasks;
+    } catch (error) {
+      return {};
+    }
   }
 
   public static async getCustomTasks() {
@@ -120,7 +181,7 @@ export default class Task extends Mappable<Task> {
       let list = JSON.parse(readFileSync(Task.customTasksPath, "utf8")) as string[];
 
       let iTasks = await Promise.all(list.map(async path => {
-        let iTask: ICustomTaskWithRef = (await import(path)).default;
+        let iTask: ITaskTemplateWithRef = (await import(path)).default;
         iTask.ref = path;
         return iTask;
       }));
@@ -139,11 +200,12 @@ export default class Task extends Mappable<Task> {
     }
   }
 
-  public parameters: {[key: string]: TaskActionParameter["defaultValue"]} = {};
+  public parameters: { [key: string]: TaskActionParameter["defaultValue"] } = {};
   public element: HTMLTaskElement;
   public iconElement: HTMLImageElement;
-  public taskType: TaskActionType = TaskActionType.None;
+  public taskType: string = null;
   private static tasksPath: string = Path.resolve(os.homedir(), ".taskion", "tasks.json");
+  private static defaultTasksFilesPath: string = Path.resolve(__dirname, "..", "..", "default-tasks");
   private static customTasksPath: string = Path.resolve(os.homedir(), ".taskion", "customTasks.json");
   public static getTasks() {
     try {
@@ -179,6 +241,6 @@ export default class Task extends Mappable<Task> {
 export interface ITask {
   icon: string;
   description: string;
-  parameters: {[key: string]: TaskActionParameter["defaultValue"]},
-  taskType: TaskActionType,
+  parameters: { [key: string]: TaskActionParameter["defaultValue"] },
+  taskType: string,
 }

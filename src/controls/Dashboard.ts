@@ -15,8 +15,8 @@ export default class Dashboard {
     // });
   }
 
-  private taskContainer = document.getElementById("task-container") as HTMLDivElement;
-  private controlPanel = {
+  public taskContainer = document.getElementById("task-container") as HTMLDivElement;
+  public controlPanel = {
     addNewTask: (document.getElementById("add-new-task") as HTMLButtonElement),
     // toggleHideOnBlur: (document.getElementById("toggle-hide-on-blur") as HTMLButtonElement),
   }

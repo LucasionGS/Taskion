@@ -1,16 +1,20 @@
-export interface ICustomTask {
+export interface ITaskTemplate {
   name: string;
   action(parameters: {[key: string]: TaskActionParameter["defaultValue"]}): void;
   parameters?: TaskActionParameter[];
 }
 
-export interface ICustomTaskWithRef extends ICustomTask {
+export interface ITaskBuildInTemplate extends ITaskTemplate {
+  identifier: string;
+}
+
+export interface ITaskTemplateWithRef extends ITaskTemplate {
   ref: string;
 }
 
 interface BaseTaskActionParameter {
   name: string,
-  type: "number" | "text" | "checkbox",
+  type: "number" | "text" | "checkbox" | "file",
   inputId: string,
   defaultValue?: number | string | boolean,
 }
@@ -26,4 +30,13 @@ interface TaskActionBoolParameter extends BaseTaskActionParameter {
   type: "checkbox",
   defaultValue?: boolean,
 }
-export type TaskActionParameter = TaskActionNumberParameter | TaskActionTextParameter | TaskActionBoolParameter;
+interface TaskActionFileParameter extends BaseTaskActionParameter {
+  type: "file",
+  defaultValue?: boolean,
+}
+export type TaskActionParameter = [
+  TaskActionNumberParameter,
+  TaskActionTextParameter,
+  TaskActionBoolParameter,
+  TaskActionFileParameter
+][number];

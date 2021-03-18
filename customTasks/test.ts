@@ -1,6 +1,6 @@
-import { ICustomTask } from "../src/taskActions/iTaskAction";
+import { ITaskTemplate } from "../src/taskActions/iTaskAction";
 
-const task: ICustomTask = {
+const task: ITaskTemplate = {
   action({text}) {
     alert(text);
   },

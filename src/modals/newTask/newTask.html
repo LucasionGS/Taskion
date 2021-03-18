@@ -19,7 +19,7 @@
     </header>
     <div id="add-task-form" class="form">
       <label>Icon</label>
-      <input type="text" onclick="selectFile();" readonly id="filename_display">
+      <input type="text" onclick="this.value = task.icon = selectImageFile();" readonly id="filename_display">
       <br>
       <label>Description</label>
       <input type="text" onchange="task.description = this.value">

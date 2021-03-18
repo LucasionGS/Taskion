@@ -12,12 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Electron = require("electron");
 const Mappable_1 = require("./Mappable");
 const ModalNewTask_1 = require("../modals/newTask/ModalNewTask");
-const taskAction_1 = require("../taskActions/taskAction");
 const os = require("os");
 const Path = require("path");
 const Settings_1 = require("./Settings");
 const fs_1 = require("fs");
 const Dashboard_1 = require("../controls/Dashboard");
+const DefaultTasks_1 = require("../taskActions/DefaultTasks");
 ;
 class Task extends Mappable_1.default {
     constructor() {
@@ -67,15 +67,62 @@ class Task extends Mappable_1.default {
             ]);
             menu.popup();
         };
+        this.onDrop = function (e) {
+            // e.preventDefault();
+            // e.stopPropagation();
+            // console.log(e.target);
+            // console.log(e.currentTarget);
+            // console.log(e.relatedTarget);
+        };
         this.parameters = {};
-        this.taskType = taskAction_1.TaskActionType.None;
+        this.taskType = null;
         this.element = document.createElement("div");
         this.element.className = "task-icon";
+        this.element.draggable = true;
         this.element.task = this;
         this.iconElement = document.createElement("img");
+        this.iconElement.draggable = false;
         this.element.appendChild(this.iconElement);
         this.element.addEventListener("click", e => typeof this.onClick === "function" ? this.onClick.bind(this)(e) : null);
         this.element.addEventListener("contextmenu", e => typeof this.onContextMenu === "function" ? this.onContextMenu.bind(this)(e) : null);
+        this.element.addEventListener("dragstart", e => {
+            Task.dragging = this;
+        });
+        this.element.addEventListener("dragover", e => {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            e.preventDefault();
+            const currentTarget = e.currentTarget;
+            if (Task.dragging != currentTarget.task) {
+                // this.swapTaskPositions(e, Task.dragging, currentTarget.task);
+                currentTarget.task.swapTaskPositions(e);
+            }
+        });
+        this.element.addEventListener("dragend", e => {
+            Task.dragging = null;
+            let d = new Dashboard_1.default();
+            let ts = d.getTasks();
+            Task.saveTasks(ts);
+        });
+    }
+    get parent() {
+        return this.element.parentElement;
+    }
+    swapTaskPositions(e) {
+        let w = this.element.getBoundingClientRect().width;
+        let o = e.offsetX;
+        let side = (w / 2) < o;
+        // Move `nodeA` to before the `nodeB`
+        if (side === false) {
+            if (this.element.previousElementSibling !== Task.dragging.element)
+                this.element.parentNode.insertBefore(Task.dragging.element, this.element);
+        }
+        else {
+            if (this.element.nextElementSibling !== Task.dragging.element)
+                this.element.parentNode.insertBefore(Task.dragging.element, this.element.nextElementSibling);
+        }
+        // Move `nodeB` to before the sibling of `nodeA`
+        // parentA.insertBefore(taskB.element, siblingA);
     }
     get icon() {
         let src = this.iconElement.src;
@@ -98,20 +145,29 @@ class Task extends Mappable_1.default {
         this.parameters = task.parameters;
         this.taskType = task.taskType;
         this.onClick = (e) => __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
             let action;
-            let customPrefix = "custom:";
+            const customPrefix = "custom:";
             if (task.taskType.startsWith(customPrefix)) {
                 let path = task.taskType.substring(customPrefix.length);
                 let cTask = (yield Promise.resolve().then(() => require(path))).default;
                 action = cTask.action;
             }
             else {
-                action = taskAction_1.TaskActions[task.taskType];
+                action = (_b = (_a = DefaultTasks_1.default[task.taskType]) === null || _a === void 0 ? void 0 : _a.action) !== null && _b !== void 0 ? _b : (() => alert("Error"));
             }
             if (typeof action === "function")
                 action(task.parameters);
         });
         return this;
+    }
+    static getDefaultTasks() {
+        try {
+            return DefaultTasks_1.default;
+        }
+        catch (error) {
+            return {};
+        }
     }
     static getCustomTasks() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -167,5 +223,7 @@ class Task extends Mappable_1.default {
     }
 }
 exports.default = Task;
+Task.dragging = null;
 Task.tasksPath = Path.resolve(os.homedir(), ".taskion", "tasks.json");
+Task.defaultTasksFilesPath = Path.resolve(__dirname, "..", "..", "default-tasks");
 Task.customTasksPath = Path.resolve(os.homedir(), ".taskion", "customTasks.json");

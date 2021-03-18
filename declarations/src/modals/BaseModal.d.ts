@@ -4,6 +4,6 @@ export default abstract class BaseModal {
     private htmlFilePath;
     private win;
     getWindow(): Electron.BrowserWindow;
-    open(onClose?: () => void): void;
+    open(onClose?: () => void): Electron.BrowserWindow;
     close(): void;
 }

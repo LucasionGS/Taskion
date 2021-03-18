@@ -23,7 +23,8 @@ export default abstract class BaseModal {
       // resizable: false,
       webPreferences: {
         nodeIntegration: true,
-        enableRemoteModule: true
+        enableRemoteModule: true,
+        
       },
       autoHideMenuBar: true,
       alwaysOnTop: true,
@@ -39,6 +40,8 @@ export default abstract class BaseModal {
     });
 
     this.win.loadFile(this.htmlFilePath);
+
+    return this.win;
   }
 
   close() {

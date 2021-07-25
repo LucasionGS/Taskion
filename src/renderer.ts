@@ -1,4 +1,4 @@
-const Electron =  require("electron");
+import Electron from "electron";
 import Dashboard from "./controls/Dashboard";
 import Header from "./Header";
 import Settings from "./objects/Settings";

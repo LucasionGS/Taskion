@@ -8,13 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const Electron = require("electron");
-const Dashboard_1 = require("./controls/Dashboard");
-const Header_1 = require("./Header");
-const Settings_1 = require("./objects/Settings");
-const Task_1 = require("./objects/Task");
-const { remote, remote: { app, } } = Electron;
+const electron_1 = __importDefault(require("electron"));
+const Dashboard_1 = __importDefault(require("./controls/Dashboard"));
+const Header_1 = __importDefault(require("./Header"));
+const Settings_1 = __importDefault(require("./objects/Settings"));
+const Task_1 = __importDefault(require("./objects/Task"));
+const { remote, remote: { app, } } = electron_1.default;
 let win = remote.getCurrentWindow();
 // win.setSize(800, 600);
 let settings = new Settings_1.default();

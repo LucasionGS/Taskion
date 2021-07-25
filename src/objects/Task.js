@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,16 +27,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const Electron = require("electron");
-const Mappable_1 = require("./Mappable");
-const ModalNewTask_1 = require("../modals/newTask/ModalNewTask");
-const os = require("os");
-const Path = require("path");
-const Settings_1 = require("./Settings");
+const Electron = __importStar(require("electron"));
+const Mappable_1 = __importDefault(require("./Mappable"));
+const ModalNewTask_1 = __importDefault(require("../modals/newTask/ModalNewTask"));
+const os = __importStar(require("os"));
+const Path = __importStar(require("path"));
+const Settings_1 = __importDefault(require("./Settings"));
 const fs_1 = require("fs");
-const Dashboard_1 = require("../controls/Dashboard");
-const DefaultTasks_1 = require("../taskActions/DefaultTasks");
+const Dashboard_1 = __importDefault(require("../controls/Dashboard"));
+const DefaultTasks_1 = __importDefault(require("../taskActions/DefaultTasks"));
 ;
 class Task extends Mappable_1.default {
     constructor() {
@@ -150,7 +172,7 @@ class Task extends Mappable_1.default {
             const customPrefix = "custom:";
             if (task.taskType.startsWith(customPrefix)) {
                 let path = task.taskType.substring(customPrefix.length);
-                let cTask = (yield Promise.resolve().then(() => require(path))).default;
+                let cTask = (yield Promise.resolve().then(() => __importStar(require(path)))).default;
                 action = cTask.action;
             }
             else {
@@ -174,7 +196,7 @@ class Task extends Mappable_1.default {
             try {
                 let list = JSON.parse(fs_1.readFileSync(Task.customTasksPath, "utf8"));
                 let iTasks = yield Promise.all(list.map((path) => __awaiter(this, void 0, void 0, function* () {
-                    let iTask = (yield Promise.resolve().then(() => require(path))).default;
+                    let iTask = (yield Promise.resolve().then(() => __importStar(require(path)))).default;
                     iTask.ref = path;
                     return iTask;
                 })));

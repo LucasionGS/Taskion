@@ -187,6 +187,7 @@ export default class Task extends Mappable<Task> {
       }));
       return iTasks;
     } catch (error) {
+      console.error(error);
       return [];
     }
   }

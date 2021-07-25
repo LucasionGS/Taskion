@@ -203,6 +203,7 @@ class Task extends Mappable_1.default {
                 return iTasks;
             }
             catch (error) {
+                console.error(error);
                 return [];
             }
         });

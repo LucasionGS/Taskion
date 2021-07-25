@@ -134,7 +134,8 @@ export default class Task extends Mappable<Task> {
     return src;
   }
   public set icon(v: string) {
-    this.iconElement.src = v;
+    if (Path.isAbsolute(v)) this.iconElement.src = "file:///" + v;
+    else this.iconElement.src = v;
   }
 
   public set description(v) {

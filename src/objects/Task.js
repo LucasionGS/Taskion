@@ -153,7 +153,10 @@ class Task extends Mappable_1.default {
         return src;
     }
     set icon(v) {
-        this.iconElement.src = v;
+        if (Path.isAbsolute(v))
+            this.iconElement.src = "file:///" + v;
+        else
+            this.iconElement.src = v;
     }
     set description(v) {
         this.element.title = v;

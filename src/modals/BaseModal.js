@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Tools_1 = require("../Tools");
-require("Electron");
+require("electron");
 class BaseModal {
     constructor(templateName) {
         this.htmlFilePath = Tools_1.prodPath(`src/modals/${templateName}/${templateName}.html`);

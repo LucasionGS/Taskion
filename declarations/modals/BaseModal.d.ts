@@ -1,4 +1,4 @@
-import "Electron";
+import "electron";
 export default abstract class BaseModal {
     constructor(templateName: string);
     private htmlFilePath;

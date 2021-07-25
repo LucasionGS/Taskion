@@ -1,5 +1,5 @@
 import { prodPath } from "../Tools";
-import "electron";
+import Electron from "electron";
 
 export default abstract class BaseModal {
   constructor(templateName: string) {

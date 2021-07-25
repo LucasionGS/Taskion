@@ -124,8 +124,12 @@ function parametersToInputs(params) {
     params.forEach(p => {
         const inputName = document.createElement("label");
         inputName.innerText = p.name;
-        const input = document.createElement("input");
-        input.type = p.type;
+        let input = document.createElement("input");
+        if (p.type === "textarea") {
+            input = document.createElement("textarea");
+        }
+        else
+            input.type = p.type;
         specialSetup(p, input);
         setDefault(p, input);
         input.addEventListener("change", () => {
@@ -171,6 +175,7 @@ function parametersToInputs(params) {
                     data.values[p.inputId] = input.checked = v;
                     break;
                 case "text":
+                case "textarea":
                 case "file":
                 default:
                     data.values[p.inputId] = input.value = v + "";

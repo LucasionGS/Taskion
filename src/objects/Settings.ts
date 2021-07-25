@@ -83,5 +83,5 @@ export default class Settings {
 }
 
 interface SettingsObject {
-  
+  hideOnBlur: boolean
 }

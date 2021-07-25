@@ -23,5 +23,6 @@ export default class Settings {
     private filePath;
 }
 interface SettingsObject {
+    hideOnBlur: boolean;
 }
 export {};

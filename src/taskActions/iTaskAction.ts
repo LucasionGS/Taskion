@@ -14,7 +14,7 @@ export interface ITaskTemplateWithRef extends ITaskTemplate {
 
 interface BaseTaskActionParameter {
   name: string,
-  type: "number" | "text" | "checkbox" | "file",
+  type: "number" | "text" | "textarea" | "checkbox" | "file",
   inputId: string,
   defaultValue?: number | string | boolean,
 }
@@ -24,6 +24,10 @@ interface TaskActionNumberParameter extends BaseTaskActionParameter {
 }
 interface TaskActionTextParameter extends BaseTaskActionParameter {
   type: "text",
+  defaultValue?: string,
+}
+interface TaskActionTextAreaParameter extends BaseTaskActionParameter {
+  type: "textarea",
   defaultValue?: string,
 }
 interface TaskActionBoolParameter extends BaseTaskActionParameter {
@@ -37,6 +41,7 @@ interface TaskActionFileParameter extends BaseTaskActionParameter {
 export type TaskActionParameter = [
   TaskActionNumberParameter,
   TaskActionTextParameter,
+  TaskActionTextAreaParameter,
   TaskActionBoolParameter,
-  TaskActionFileParameter
+  TaskActionFileParameter,
 ][number];

@@ -26,7 +26,7 @@ function createWindow () {
       contextIsolation: false,
     },
     autoHideMenuBar: true,
-    alwaysOnTop: true,
+    // alwaysOnTop: true,
     darkTheme: true,
     fullscreenable: false,
     frame: false,

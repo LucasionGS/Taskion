@@ -104,8 +104,11 @@ function parametersToInputs(params: TaskActionParameter[]) {
   params.forEach(p => {
     const inputName = document.createElement("label");
     inputName.innerText = p.name;
-    const input = document.createElement("input");
-    input.type = p.type;
+    let input: HTMLInputElement = document.createElement("input");
+    if (p.type === "textarea") {
+      input = document.createElement("textarea") as any;
+    }
+    else input.type = p.type;
 
     specialSetup(p, input);
     setDefault(p, input);
@@ -160,6 +163,7 @@ function parametersToInputs(params: TaskActionParameter[]) {
           break;
 
         case "text":
+        case "textarea":
         case "file":
         default:
           data.values[p.inputId] = input.value = v + "";

@@ -3,7 +3,7 @@ import * as os from "os";
 import * as cp from "child_process";
 import Task from "../../../objects/Task";
 
-const OpenItem: ITaskBuildInTemplate = {
+const CreateNewTask: ITaskBuildInTemplate = {
   name: "Create New Task",
   identifier: "CreateNewTask",
   parameters: [],
@@ -11,4 +11,4 @@ const OpenItem: ITaskBuildInTemplate = {
     Task.newTask();
   }
 }
-export default OpenItem;
+export default CreateNewTask;

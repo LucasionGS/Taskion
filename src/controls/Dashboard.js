@@ -6,6 +6,7 @@ class Dashboard {
         this.taskContainer = document.getElementById("task-container");
         this.controlPanel = {
             addNewTask: document.getElementById("add-new-task"),
+            // toggleHideOnBlur: (document.getElementById("toggle-hide-on-blur") as HTMLButtonElement),
         };
         // Initialize
     }

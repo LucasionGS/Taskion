@@ -22,7 +22,8 @@ function createWindow () {
     // resizable: false,
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: true
+      enableRemoteModule: true,
+      contextIsolation: false,
     },
     autoHideMenuBar: true,
     alwaysOnTop: true,

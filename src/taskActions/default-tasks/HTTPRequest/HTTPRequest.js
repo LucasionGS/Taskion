@@ -42,8 +42,8 @@ const HTTPRequest = {
     action({ url, method, body, showResponse, showErrors, }) {
         fetch(url, {
             method,
-            body: ((body.trimStart().startsWith("{") && body.trimEnd().endsWith("}"))
-                || (body.trimStart().startsWith("[") && body.trimEnd().endsWith("]"))) ? body : JSON.stringify(body)
+            body: method.toLowerCase() == "post" || method.toLowerCase() == "PUT" ? (((body.trimStart().startsWith("{") && body.trimEnd().endsWith("}"))
+                || (body.trimStart().startsWith("[") && body.trimEnd().endsWith("]"))) ? body : JSON.stringify(body)) : null
         }).then(response => {
             if (response.ok) {
                 return response.text();

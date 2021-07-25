@@ -53,10 +53,10 @@ const HTTPRequest: ITaskBuildInTemplate = {
     }) {
     fetch(url, {
       method,
-      body: method.toLowerCase() == "post" || method.toLowerCase() == "PUT" ? ((
+      body: method.toLowerCase() == "post" || method.toLowerCase() == "put" ? ((
         (body.trimStart().startsWith("{") && body.trimEnd().endsWith("}"))
         || (body.trimStart().startsWith("[") && body.trimEnd().endsWith("]"))
-      ) ? body : JSON.stringify(body)) : null
+      ) ? body : JSON.stringify(body)) : undefined
     }).then(response => {
       if (response.ok) {
         return response.text();

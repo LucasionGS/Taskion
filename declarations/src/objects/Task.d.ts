@@ -13,6 +13,7 @@ export default class Task extends Mappable<Task> {
     onDrop: ((this: Task, event: DragEvent) => void);
     get icon(): string;
     set icon(v: string);
+    private iconSrc;
     set description(v: string);
     get description(): string;
     mapFrom(task: ITask): this;

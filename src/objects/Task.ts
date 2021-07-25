@@ -129,14 +129,16 @@ export default class Task extends Mappable<Task> {
   }
 
   public get icon(): string {
-    let src = this.iconElement.src;
-    if (src.startsWith("file:///")) src = src.substring("file:///".length);
+    let src = this.iconSrc;
+    // if (src.startsWith("file:///")) src = src.substring("file:///".length);
     return src;
   }
   public set icon(v: string) {
-    if (Path.isAbsolute(v)) this.iconElement.src = "file:///" + v;
-    else this.iconElement.src = v;
+    // if (Path.isAbsolute(v)) this.iconElement.src = "file:///" + v;
+    // else this.iconElement.src = v;
+    this.iconElement.src = this.iconSrc = v;
   }
+  private iconSrc: string = "";
 
   public set description(v) {
     this.element.title = v;

@@ -96,6 +96,7 @@ class Task extends Mappable_1.default {
             // console.log(e.currentTarget);
             // console.log(e.relatedTarget);
         };
+        this.iconSrc = "";
         this.parameters = {};
         this.taskType = null;
         this.element = document.createElement("div");
@@ -147,16 +148,14 @@ class Task extends Mappable_1.default {
         // parentA.insertBefore(taskB.element, siblingA);
     }
     get icon() {
-        let src = this.iconElement.src;
-        if (src.startsWith("file:///"))
-            src = src.substring("file:///".length);
+        let src = this.iconSrc;
+        // if (src.startsWith("file:///")) src = src.substring("file:///".length);
         return src;
     }
     set icon(v) {
-        if (Path.isAbsolute(v))
-            this.iconElement.src = "file:///" + v;
-        else
-            this.iconElement.src = v;
+        // if (Path.isAbsolute(v)) this.iconElement.src = "file:///" + v;
+        // else this.iconElement.src = v;
+        this.iconElement.src = this.iconSrc = v;
     }
     set description(v) {
         this.element.title = v;
